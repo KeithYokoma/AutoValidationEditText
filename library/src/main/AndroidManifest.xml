@@ -1,0 +1,8 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="jp.yokomark.widget.edittext.validation">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher">
+    </application>
+</manifest>

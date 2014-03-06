@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AutoValidationEditText">
+        <!-- Integer value for use on validating the input text length. -->
+        <attr name="maxLengthThreshold" format="integer|reference"/>
+        <attr name="minLengthThreshold" format="integer|reference"/>
+
+        <!-- TODO: introduce input type attribute for the future release -->
+
+        <!-- Enum value for use on validation alert view. -->
+        <attr name="alertType" format="enum">
+            <enum name="textColor" value="0"/>
+            <enum name="backgroundColor" value="1"/>
+            <enum name="errorTip" value="2"/>
+        </attr>
+
+        <!-- String value for use on validation alert view message. Especially use this attribute with alertType="errorTip" -->
+        <attr name="alertMessage" format="string|reference"/>
+
+        <!-- Color value for use on validation alert view color. Especially use this attribute with alertType="textColor" or alertType="backgroundColor" -->
+        <attr name="alertColor" format="color|reference"/>
+    </declare-styleable>
+</resources>
