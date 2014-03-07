@@ -37,6 +37,22 @@ Just put the customized EditText with some attributes we need.
 
 - Pattern matching validation
 
+## Download
+
+Via gradle
+
+```
+repositories {
+    mavenCentral()
+    maven { url 'https://raw.github.com/KeithYokoma/AutoValidationEditText/master/repository/' }
+}
+android {
+    dependencies {
+        compile 'jp.yokomark.widget:AutoValidationEditText:1.0.0'
+    }
+}
+```
+
 ## License
 
 ```
