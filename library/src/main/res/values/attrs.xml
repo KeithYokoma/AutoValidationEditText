@@ -19,5 +19,6 @@
 
         <!-- Color value for use on validation alert view color. Especially use this attribute with alertType="textColor" or alertType="backgroundColor" -->
         <attr name="alertColor" format="color|reference"/>
+        <attr name="normalColor" format="color|reference"/>
     </declare-styleable>
 </resources>

@@ -1,4 +1,4 @@
-package jp.yokomark.widget.edittext.validation.internal.handler;
+package jp.yokomark.widget.edittext.validation.internal.matcher;
 
 import jp.yokomark.widget.edittext.validation.internal.entity.ValidationRule;
 

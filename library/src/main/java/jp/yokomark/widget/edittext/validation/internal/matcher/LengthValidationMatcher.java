@@ -1,4 +1,4 @@
-package jp.yokomark.widget.edittext.validation.internal.handler;
+package jp.yokomark.widget.edittext.validation.internal.matcher;
 
 import jp.yokomark.widget.edittext.validation.internal.entity.ValidationRule;
 
@@ -10,6 +10,6 @@ public class LengthValidationMatcher implements ValidationRuleMatcher {
     @Override
     public boolean match(CharSequence input, ValidationRule rule) {
         int length = input.length();
-        return length >= rule.getMinLengthThreshold() && length <= rule.getMaxLengthThreshold();
+        return length < rule.getMinLengthThreshold() || length > rule.getMaxLengthThreshold();
     }
 }

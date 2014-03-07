@@ -8,63 +8,103 @@ import android.widget.EditText;
 
 import jp.yokomark.widget.edittext.validation.internal.entity.AlertType;
 import jp.yokomark.widget.edittext.validation.internal.entity.AlertViewResource;
+import jp.yokomark.widget.edittext.validation.internal.entity.NormalViewResource;
 import jp.yokomark.widget.edittext.validation.internal.entity.ValidationRule;
-import jp.yokomark.widget.edittext.validation.internal.listener.TextInputListener;
+import jp.yokomark.widget.edittext.validation.internal.matcher.ValidationRuleCollection;
 
 /**
  * @author keishin.yokomaku
  * @since 2014/03/06
  */
+@SuppressWarnings("unused") // public APIs
 public class AutoValidationEditText extends EditText {
-    private TextInputListener mListener;
+    private boolean mIsInitialized = false;
+    private ValidationRuleCollection mRuleMatcher;
+    private ValidationRule mRule;
+    private AlertType mType;
+    private AlertViewResource mAlertResource;
+    private NormalViewResource mNormalResource;
+    private OnValidationListener mListener;
 
     public static final String TAG = AutoValidationEditText.class.getSimpleName();
 
     public AutoValidationEditText(Context context) {
-        this(context, null);
+        super(context);
+        mRuleMatcher = new ValidationRuleCollection();
+        init(context, null, 0);
     }
 
     public AutoValidationEditText(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        mRuleMatcher = new ValidationRuleCollection();
+        init(context, attrs, 0);
     }
 
     public AutoValidationEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mRuleMatcher = new ValidationRuleCollection();
+        init(context, attrs, defStyle);
+    }
 
+    private void init(Context context, AttributeSet attrs, int defStyle) {
         TypedArray a = null;
         try {
             a = context.obtainStyledAttributes(attrs, R.styleable.AutoValidationEditText, defStyle, 0);
-            AlertType type = AlertType.valueOf(a);
+            mType = AlertType.valueOf(a);
             int minLength = a.getInt(R.styleable.AutoValidationEditText_minLengthThreshold, 0);
             int maxLength = a.getInt(R.styleable.AutoValidationEditText_maxLengthThreshold, Integer.MAX_VALUE);
-            String message = a.getString(R.styleable.AutoValidationEditText_alertMessage);
-            int color = a.getColor(R.styleable.AutoValidationEditText_alertColor, Color.RED);
-            ValidationRule rule = new ValidationRule(maxLength, minLength);
-            AlertViewResource resource = new AlertViewResource();
-            resource.setColor(color);
-            resource.setMessage(message);
-            mListener = new TextInputListener(this, rule, type, resource);
+            mRule = new ValidationRule(maxLength, minLength);
+            mAlertResource = new AlertViewResource();
+            mAlertResource.setColor(a.getColor(R.styleable.AutoValidationEditText_alertColor, Color.RED));
+            mAlertResource.setMessage(a.getString(R.styleable.AutoValidationEditText_alertMessage));
+            mNormalResource = new NormalViewResource();
+            mNormalResource.setColor(a.getColor(R.styleable.AutoValidationEditText_normalColor, Color.WHITE));
+            mIsInitialized = true;
+            validate();
         } finally {
             if (a != null) {
-                a.recycle();;
+                a.recycle();
             }
         }
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        addTextChangedListener(mListener);
+    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        validate();
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        mListener.destroy();
-        removeTextChangedListener(mListener);
-        super.onDetachedFromWindow();
+    public void setOnValidationListener(OnValidationListener listener) {
+        mListener = listener;
     }
 
-    public interface OnValidationFailureListener {
-        public void onFailure();
+    private void validate() {
+        if (!mIsInitialized) {
+            return;
+        }
+        if (mRuleMatcher.match(getText(), mRule)) {
+            mType.getHandler().onError(this, mAlertResource);
+            callOnError();
+        } else {
+            mType.getHandler().onValid(this, mNormalResource);
+            callOnValid();
+        }
+    }
+
+    private void callOnValid() {
+        if (mListener != null) {
+            mListener.onValid();
+        }
+    }
+
+    private void callOnError() {
+        if (mListener != null) {
+            mListener.onError();
+        }
+    }
+
+    public interface OnValidationListener {
+        public void onError();
+        public void onValid();
     }
 }
